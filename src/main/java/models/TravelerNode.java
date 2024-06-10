@@ -1,18 +1,29 @@
 package main.java.models;
 
+import main.java.trees.TravelerTree;
+
 public class TravelerNode {
     private int id;
     private String name;
-    private TravelerNode left, right;
+    private TravelerNode left;
+    private TravelerNode right;
+    private TravelerTree dependents;
+    private static int idCounter = 1;
 
-    public TravelerNode(int id, String name) {
-        this.id = id;
+    public TravelerNode(String name) {
+        this.id = idCounter++;
         this.name = name;
-        this.left = this.right = null;
+        this.left = null;
+        this.right = null;
+        this.dependents = new TravelerTree();
     }
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -37,5 +48,13 @@ public class TravelerNode {
 
     public void setRight(TravelerNode right) {
         this.right = right;
+    }
+
+    public TravelerTree getDependents() {
+        return dependents;
+    }
+
+    public void setDependents(TravelerTree dependents) {
+        this.dependents = dependents;
     }
 }

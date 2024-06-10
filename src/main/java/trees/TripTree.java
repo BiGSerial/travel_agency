@@ -1,51 +1,112 @@
 package main.java.trees;
 
+import main.java.models.TravelerNode;
 import main.java.models.TripNode;
 
 public class TripTree {
     private TripNode root;
-    private int idCounter; // Terá uma dupla função, além de informar a quantidade de nós, informará sempre
-                           // o ultimo nó.
+    private int nextId = 1;
 
-    public TripTree() {
-        this.root = null;
-        this.idCounter = 0;
+    public void insert(String destination) {
+        TripNode newNode = new TripNode(nextId++, destination);
+        root = insertRec(root, newNode);
     }
 
-    public void inserir(String destination) {
-        int id = ++idCounter;
-        this.root = inserirArvore(this.root, id, destination);
-    }
-
-    private TripNode inserirArvore(TripNode root, int id, String destination) {
+    private TripNode insertRec(TripNode root, TripNode newNode) {
         if (root == null) {
-            root = new TripNode(id, destination);
-
+            root = newNode;
             return root;
         }
-
-        if (id < root.getId()) {
-            root.setLeft(inserirArvore(root.getLeft(), id, destination));
-        } else if (id > root.getId()) {
-            root.setRight(inserirArvore(root.getRight(), id, destination));
+        if (newNode.getDestination().compareTo(root.getDestination()) < 0) {
+            root.setLeft(insertRec(root.getLeft(), newNode));
+        } else if (newNode.getDestination().compareTo(root.getDestination()) > 0) {
+            root.setRight(insertRec(root.getRight(), newNode));
         }
-
         return root;
     }
 
-    public TripNode buscar(int id) {
-        return buscarArvore(this.root, id);
+    public TripNode searchByDestination(String destination) {
+        return searchByDestinationRec(root, destination);
     }
 
-    private TripNode buscarArvore(TripNode root, int id) {
+    private TripNode searchByDestinationRec(TripNode root, String destination) {
+        if (root == null || root.getDestination().equals(destination)) {
+            return root;
+        }
+        if (root.getDestination().compareTo(destination) > 0) {
+            return searchByDestinationRec(root.getLeft(), destination);
+        }
+        return searchByDestinationRec(root.getRight(), destination);
+    }
+
+    public TripNode searchById(int id) {
+        return searchByIdRec(root, id);
+    }
+
+    private TripNode searchByIdRec(TripNode root, int id) {
         if (root == null || root.getId() == id) {
             return root;
         }
-
-        if (root.getId() > id) {
-            return buscarArvore(root.getLeft(), id);
+        TripNode leftResult = searchByIdRec(root.getLeft(), id);
+        if (leftResult != null) {
+            return leftResult;
         }
+        return searchByIdRec(root.getRight(), id);
+    }
 
-        return buscarArvore(root.getRight(), id);
+    public void removeById(int id) {
+        root = removeRec(root, id);
+    }
+
+    private TripNode removeRec(TripNode root, int id) {
+        if (root == null) {
+            return root;
+        }
+        if (id < root.getId()) {
+            root.setLeft(removeRec(root.getLeft(), id));
+        } else if (id > root.getId()) {
+            root.setRight(removeRec(root.getRight(), id));
+        } else {
+            if (root.getLeft() == null) {
+                return root.getRight();
+            } else if (root.getRight() == null) {
+                return root.getLeft();
+            }
+            root.setId(minValue(root.getRight()));
+            root.setRight(removeRec(root.getRight(), root.getId()));
+        }
+        return root;
+    }
+
+    private int minValue(TripNode root) {
+        int minValue = root.getId();
+        while (root.getLeft() != null) {
+            minValue = root.getLeft().getId();
+            root = root.getLeft();
+        }
+        return minValue;
+    }
+
+    public void addTraveler(int tripId, TravelerNode traveler) {
+        TripNode trip = searchById(tripId);
+        if (trip != null) {
+            trip.getTravelers().insert(traveler);
+        }
+    }
+
+    public void removeTraveler(int tripId, int travelerId) {
+        TripNode trip = searchById(tripId);
+        if (trip != null) {
+            trip.getTravelers().removeById(travelerId);
+        }
+    }
+
+    public void transferTraveler(int fromTripId, int toTripId, TravelerNode traveler) {
+        TripNode fromTrip = searchById(fromTripId);
+        TripNode toTrip = searchById(toTripId);
+        if (fromTrip != null && toTrip != null) {
+            removeTraveler(fromTripId, traveler.getId());
+            addTraveler(toTripId, traveler);
+        }
     }
 }
