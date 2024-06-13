@@ -1,40 +1,30 @@
 package main.java.models;
 
+import main.java.data.ItemTrip;
 import main.java.trees.TravelerTree;
 
 public class TripNode {
-    private int id;
-    private String destination;
+    
+    private ItemTrip info;
     private TripNode left;
     private TripNode right;
-    private TravelerTree travelers;
 
-    public TripNode(int id, String destination) {
-        this.id = id;
-        this.destination = destination;
+    public TripNode(ItemTrip trip) {
+        this.info = trip;
         this.left = null;
-        this.right = null;
-        this.travelers = new TravelerTree();
+        this.right = null;       
     }
 
-    public int getId() {
-        return id;
+    public ItemTrip getInfo() {
+        return this.info;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getDestination() {
-        return destination;
-    }
-
-    public void setDestination(String destination) {
-        this.destination = destination;
+    public void setInfo(ItemTrip info) {
+        this.info = info;
     }
 
     public TripNode getLeft() {
-        return left;
+        return this.left;
     }
 
     public void setLeft(TripNode left) {
@@ -42,18 +32,14 @@ public class TripNode {
     }
 
     public TripNode getRight() {
-        return right;
+        return this.right;
     }
 
     public void setRight(TripNode right) {
         this.right = right;
     }
+  
 
-    public TravelerTree getTravelers() {
-        return travelers;
-    }
+    
 
-    public void setTravelers(TravelerTree travelers) {
-        this.travelers = travelers;
-    }
 }

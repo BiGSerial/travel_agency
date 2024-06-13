@@ -1,107 +1,114 @@
 package main.java.trees;
 
+import main.java.data.ItemTraveler;
 import main.java.models.TravelerNode;
 
 public class TravelerTree {
-
     private TravelerNode root;
-
-    public TravelerTree() {
+    private int countNode;
+    
+    public TravelerTree(){
+        this.countNode = 0;
         this.root = null;
     }
 
-    public void insert(TravelerNode traveler) {
-        root = insertRec(root, traveler);
+    public boolean isEmpty(){
+        return (this.root == null);
     }
 
-    private TravelerNode insertRec(TravelerNode root, TravelerNode traveler) {
-        if (root == null) {
-            root = traveler;
-            return root;
-        }
-        if (traveler.getName().compareTo(root.getName()) < 0) {
-            root.setLeft(insertRec(root.getLeft(), traveler));
-        } else if (traveler.getName().compareTo(root.getName()) > 0) {
-            root.setRight(insertRec(root.getRight(), traveler));
-        }
-        return root;
+    public TravelerNode getRoot(){
+        return this.root;
     }
 
-    public TravelerNode searchById(int id) {
-        return searchByIdRec(root, id);
+    public int getCountNode(){
+        return this.countNode;
     }
 
-    private TravelerNode searchByIdRec(TravelerNode root, int id) {
-        if (root == null || root.getId() == id) {
-            return root;
-        }
-        if (id < root.getId()) {
-            return searchByIdRec(root.getLeft(), id);
-        }
-        return searchByIdRec(root.getRight(), id);
-    }
-
-    public TravelerNode searchByName(String name) {
-        return searchByNameRec(root, name);
-    }
-
-    private TravelerNode searchByNameRec(TravelerNode root, String name) {
-        if (root == null || root.getName().equals(name)) {
-            return root;
-        }
-        if (name.compareTo(root.getName()) < 0) {
-            return searchByNameRec(root.getLeft(), name);
-        }
-        return searchByNameRec(root.getRight(), name);
-    }
-
-    public void removeById(int id) {
-        root = removeByIdRec(root, id);
-    }
-
-    private TravelerNode removeByIdRec(TravelerNode root, int id) {
-        if (root == null) {
-            return root;
-        }
-        if (id < root.getId()) {
-            root.setLeft(removeByIdRec(root.getLeft(), id));
-        } else if (id > root.getId()) {
-            root.setRight(removeByIdRec(root.getRight(), id));
+    public boolean insert(ItemTraveler traveler) {
+        if (search(traveler.getTravelerId())) {
+            return false;
         } else {
-            if (root.getLeft() == null) {
-                return root.getRight();
-            } else if (root.getRight() == null) {
-                return root.getLeft();
+            this.root = insert(traveler, this.root);
+            this.countNode++;
+            return true;
+        }
+    }
+
+    private TravelerNode insert(ItemTraveler traveler, TravelerNode node) {
+        if (node == null) {
+            TravelerNode newNode = new TravelerNode(traveler);
+            return newNode;
+        } else {
+            if (traveler.getTravelerId() < node.getInfo().getTravelerId()) {
+                node.setLeft(insert(traveler, node.getLeft()));
+                return node;
+            } else {
+                node.setRight(insert(traveler, node.getRight()));
+                return node;
             }
-            root.setName(findMin(root.getRight()).getName());
-            root.setRight(removeByIdRec(root.getRight(), root.getId()));
-        }
-        return root;
-    }
-
-    private TravelerNode findMin(TravelerNode root) {
-        while (root.getLeft() != null) {
-            root = root.getLeft();
-        }
-        return root;
-    }
-
-    public void addDependent(int travelerId, TravelerNode dependent) {
-        TravelerNode traveler = searchById(travelerId);
-        if (traveler != null) {
-            traveler.getDependents().insert(dependent);
         }
     }
 
-    public void removeDependent(int travelerId, int dependentId) {
-        TravelerNode traveler = searchById(travelerId);
-        if (traveler != null) {
-            traveler.getDependents().removeById(dependentId);
+    public boolean search(int idTraveler) {
+        if (search(idTraveler, this.root) != null) {
+            return true;
+        } else {
+            return false;
         }
     }
 
-    public void transferDependent(int fromTravelerId, int toTravelerId, TravelerNode dependent) {
-        removeDependent(fromTravelerId, dependent.getId());
-        addDependent(toTravelerId, dependent);
+    private TravelerNode search(int idTraveler, TravelerNode node) {
+        if (node != null) {
+            if (idTraveler < node.getInfo().getTravelerId()) {
+                node = search(idTraveler, node.getLeft());
+            } else {
+                if (idTraveler > node.getInfo().getTravelerId()) {
+                    node = search(idTraveler, node.getRight());
+                }
+            }
+        }
+        return node;
     }
+
+    public boolean remove(int travelerId) {
+        if (search(travelerId, this.root) != null) {
+            this.root = remove(travelerId, this.root);
+            this.countNode--;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private TravelerNode remove(int travelerId, TravelerNode node) {
+        if (travelerId < node.getInfo().getTravelerId()) {
+            node.setLeft(remove(travelerId, node.getLeft()));
+        } else {
+            if (travelerId > node.getInfo().getTravelerId()) {
+                node.setRight(remove(travelerId, node.getRight()));
+            } else {
+                if (node.getRight() == null) {
+                    return node.getLeft();
+                } else {
+                    if (node.getLeft() == null) {
+                        return node.getRight();
+                    } else {
+                        node.setLeft(fixTree(node, node.getLeft()));
+                    }
+                }
+            }
+        }
+        return node;
+    }
+
+    private TravelerNode fixTree(TravelerNode node, TravelerNode nodeHigh) {
+        if (nodeHigh.getRight() != null) {
+            nodeHigh.setRight(fixTree(node, nodeHigh.getRight()));
+        } else {
+            node.setInfo(nodeHigh.getInfo());
+            nodeHigh = nodeHigh.getLeft();
+        }
+        return nodeHigh;
+    }
+
 }
