@@ -6,26 +6,26 @@ import main.java.models.TravelerNode;
 public class TravelerTree {
     private TravelerNode root;
     private int countNode;
-    
-    public TravelerTree(){
+
+    public TravelerTree() {
         this.countNode = 0;
         this.root = null;
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return (this.root == null);
     }
 
-    public TravelerNode getRoot(){
+    public TravelerNode getRoot() {
         return this.root;
     }
 
-    public int getCountNode(){
+    public int getCountNode() {
         return this.countNode;
     }
 
     public boolean insert(ItemTraveler traveler) {
-        if (search(traveler.getTravelerId())) {
+        if (searchNode(traveler.getTravelerId()) != null) {
             return false;
         } else {
             this.root = insert(traveler, this.root);
@@ -49,29 +49,25 @@ public class TravelerTree {
         }
     }
 
-    public boolean search(int idTraveler) {
-        if (search(idTraveler, this.root) != null) {
-            return true;
-        } else {
-            return false;
-        }
+    public TravelerNode searchNode(int idTraveler) {
+        return searchNode(idTraveler, this.root);
     }
 
-    private TravelerNode search(int idTraveler, TravelerNode node) {
-        if (node != null) {
-            if (idTraveler < node.getInfo().getTravelerId()) {
-                node = search(idTraveler, node.getLeft());
-            } else {
-                if (idTraveler > node.getInfo().getTravelerId()) {
-                    node = search(idTraveler, node.getRight());
-                }
-            }
+    private TravelerNode searchNode(int idTraveler, TravelerNode node) {
+        if (node == null) {
+            return null;
         }
-        return node;
+        if (idTraveler < node.getInfo().getTravelerId()) {
+            return searchNode(idTraveler, node.getLeft());
+        } else if (idTraveler > node.getInfo().getTravelerId()) {
+            return searchNode(idTraveler, node.getRight());
+        } else {
+            return node;
+        }
     }
 
     public boolean remove(int travelerId) {
-        if (search(travelerId, this.root) != null) {
+        if (searchNode(travelerId) != null) {
             this.root = remove(travelerId, this.root);
             this.countNode--;
             return true;
@@ -83,19 +79,15 @@ public class TravelerTree {
     private TravelerNode remove(int travelerId, TravelerNode node) {
         if (travelerId < node.getInfo().getTravelerId()) {
             node.setLeft(remove(travelerId, node.getLeft()));
+        } else if (travelerId > node.getInfo().getTravelerId()) {
+            node.setRight(remove(travelerId, node.getRight()));
         } else {
-            if (travelerId > node.getInfo().getTravelerId()) {
-                node.setRight(remove(travelerId, node.getRight()));
+            if (node.getRight() == null) {
+                return node.getLeft();
+            } else if (node.getLeft() == null) {
+                return node.getRight();
             } else {
-                if (node.getRight() == null) {
-                    return node.getLeft();
-                } else {
-                    if (node.getLeft() == null) {
-                        return node.getRight();
-                    } else {
-                        node.setLeft(fixTree(node, node.getLeft()));
-                    }
-                }
+                node.setLeft(fixTree(node, node.getLeft()));
             }
         }
         return node;
@@ -111,4 +103,18 @@ public class TravelerTree {
         return nodeHigh;
     }
 
+    public ItemTraveler[] inOrder() {
+        ItemTraveler[] items = new ItemTraveler[this.countNode];
+        int[] index = new int[1];
+        inOrder(this.root, items, index);
+        return items;
+    }
+
+    private void inOrder(TravelerNode node, ItemTraveler[] items, int[] index) {
+        if (node != null) {
+            inOrder(node.getLeft(), items, index);
+            items[index[0]++] = node.getInfo();
+            inOrder(node.getRight(), items, index);
+        }
+    }
 }

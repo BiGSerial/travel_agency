@@ -1,112 +1,120 @@
 package main.java.trees;
 
-import main.java.models.TravelerNode;
+import main.java.data.ItemTrip;
 import main.java.models.TripNode;
 
 public class TripTree {
     private TripNode root;
-    private int nextId = 1;
+    private int countNode;
 
-    public void insert(String destination) {
-        TripNode newNode = new TripNode(nextId++, destination);
-        root = insertRec(root, newNode);
+    public TripTree() {
+        this.countNode = 0;
+        this.root = null;
     }
 
-    private TripNode insertRec(TripNode root, TripNode newNode) {
-        if (root == null) {
-            root = newNode;
-            return root;
-        }
-        if (newNode.getDestination().compareTo(root.getDestination()) < 0) {
-            root.setLeft(insertRec(root.getLeft(), newNode));
-        } else if (newNode.getDestination().compareTo(root.getDestination()) > 0) {
-            root.setRight(insertRec(root.getRight(), newNode));
-        }
-        return root;
+    public boolean isEmpty() {
+        return (this.root == null);
     }
 
-    public TripNode searchByDestination(String destination) {
-        return searchByDestinationRec(root, destination);
+    public TripNode getRoot() {
+        return this.root;
     }
 
-    private TripNode searchByDestinationRec(TripNode root, String destination) {
-        if (root == null || root.getDestination().equals(destination)) {
-            return root;
-        }
-        if (root.getDestination().compareTo(destination) > 0) {
-            return searchByDestinationRec(root.getLeft(), destination);
-        }
-        return searchByDestinationRec(root.getRight(), destination);
+    public int getCountNode() {
+        return this.countNode;
     }
 
-    public TripNode searchById(int id) {
-        return searchByIdRec(root, id);
-    }
-
-    private TripNode searchByIdRec(TripNode root, int id) {
-        if (root == null || root.getId() == id) {
-            return root;
-        }
-        TripNode leftResult = searchByIdRec(root.getLeft(), id);
-        if (leftResult != null) {
-            return leftResult;
-        }
-        return searchByIdRec(root.getRight(), id);
-    }
-
-    public void removeById(int id) {
-        root = removeRec(root, id);
-    }
-
-    private TripNode removeRec(TripNode root, int id) {
-        if (root == null) {
-            return root;
-        }
-        if (id < root.getId()) {
-            root.setLeft(removeRec(root.getLeft(), id));
-        } else if (id > root.getId()) {
-            root.setRight(removeRec(root.getRight(), id));
+    public boolean insert(ItemTrip trip) {
+        if (searchNode(trip.getId()) != null) {
+            return false;
         } else {
-            if (root.getLeft() == null) {
-                return root.getRight();
-            } else if (root.getRight() == null) {
-                return root.getLeft();
+            this.root = insert(trip, this.root);
+            this.countNode++;
+            return true;
+        }
+    }
+
+    private TripNode insert(ItemTrip trip, TripNode node) {
+        if (node == null) {
+            TripNode newNode = new TripNode(trip);
+            return newNode;
+        } else {
+            if (trip.getId() < node.getInfo().getId()) {
+                node.setLeft(insert(trip, node.getLeft()));
+                return node;
+            } else {
+                node.setRight(insert(trip, node.getRight()));
+                return node;
             }
-            root.setId(minValue(root.getRight()));
-            root.setRight(removeRec(root.getRight(), root.getId()));
-        }
-        return root;
-    }
-
-    private int minValue(TripNode root) {
-        int minValue = root.getId();
-        while (root.getLeft() != null) {
-            minValue = root.getLeft().getId();
-            root = root.getLeft();
-        }
-        return minValue;
-    }
-
-    public void addTraveler(int tripId, TravelerNode traveler) {
-        TripNode trip = searchById(tripId);
-        if (trip != null) {
-            trip.getTravelers().insert(traveler);
         }
     }
 
-    public void removeTraveler(int tripId, int travelerId) {
-        TripNode trip = searchById(tripId);
-        if (trip != null) {
-            trip.getTravelers().removeById(travelerId);
+    public TripNode searchNode(int id) {
+        return searchNode(id, this.root);
+    }
+
+    private TripNode searchNode(int id, TripNode node) {
+        if (node == null) {
+            return null;
+        }
+        if (id < node.getInfo().getId()) {
+            return searchNode(id, node.getLeft());
+        } else if (id > node.getInfo().getId()) {
+            return searchNode(id, node.getRight());
+        } else {
+            return node;
         }
     }
 
-    public void transferTraveler(int fromTripId, int toTripId, TravelerNode traveler) {
-        TripNode fromTrip = searchById(fromTripId);
-        TripNode toTrip = searchById(toTripId);
-        if (fromTrip != null && toTrip != null) {
-            removeTraveler(fromTripId, traveler.getId());
-            addTraveler(toTripId, traveler);
+    public boolean remove(int id) {
+        if (searchNode(id) != null) {
+            this.root = remove(id, this.root);
+            this.countNode--;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private TripNode remove(int id, TripNode node) {
+        if (id < node.getInfo().getId()) {
+            node.setLeft(remove(id, node.getLeft()));
+        } else if (id > node.getInfo().getId()) {
+            node.setRight(remove(id, node.getRight()));
+        } else {
+            if (node.getRight() == null) {
+                return node.getLeft();
+            } else if (node.getLeft() == null) {
+                return node.getRight();
+            } else {
+                node.setLeft(fixTree(node, node.getLeft()));
+            }
+        }
+        return node;
+    }
+
+    private TripNode fixTree(TripNode node, TripNode nodeHigh) {
+        if (nodeHigh.getRight() != null) {
+            nodeHigh.setRight(fixTree(node, nodeHigh.getRight()));
+        } else {
+            node.setInfo(nodeHigh.getInfo());
+            nodeHigh = nodeHigh.getLeft();
+        }
+        return nodeHigh;
+    }
+
+    public ItemTrip[] inOrder() {
+        ItemTrip[] items = new ItemTrip[this.countNode];
+        int[] index = new int[1];
+        inOrder(this.root, items, index);
+        return items;
+    }
+
+    private void inOrder(TripNode node, ItemTrip[] items, int[] index) {
+        if (node != null) {
+            inOrder(node.getLeft(), items, index);
+            items[index[0]++] = node.getInfo();
+            inOrder(node.getRight(), items, index);
         }
     }
 }
