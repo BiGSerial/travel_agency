@@ -1,7 +1,6 @@
 package main.java.tools;
 
 import java.util.Random;
-
 import main.java.trees.TravelerTree;
 import main.java.trees.TripTree;
 
@@ -17,9 +16,8 @@ public class IDGenerator {
         }
 
         do {
-            id = random.nextInt(Integer.MAX_VALUE);
-            
-        } while (tree.searchNode(id) != id); // Verifica se o ID já existe na árvore
+            id = random.nextInt(500);
+        } while (tree.searchNode(id) != null); // Verifica se o ID já existe na árvore
 
         return id;
     }
@@ -32,10 +30,9 @@ public class IDGenerator {
         }
 
         do {
-            id = random.nextInt(Integer.MAX_VALUE);
-        } while (tree.searcNode(id)); // Verifica se o ID já existe na árvore
+            id = random.nextInt(500);
+        } while (tree.searchNode(id) != null); // Verifica se o ID já existe na árvore
 
         return id;
     }
-
 }

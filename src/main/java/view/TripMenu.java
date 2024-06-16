@@ -1,148 +1,213 @@
 package main.java.view;
 
 import java.util.Scanner;
+
 import main.java.data.ItemTrip;
+import main.java.models.TripNode;
+import main.java.tools.*;
 import main.java.trees.TripTree;
-import main.java.tools.IDGenerator;
 
 public class TripMenu {
+
     private Scanner scanner = new Scanner(System.in);
-    private TripTree tripTree = new TripTree();
+    private TripTree tripTree;
+    private MainMenu mainMenu;
+
+    public TripMenu(TripTree tripTree, MainMenu mainMenu) {
+        this.tripTree = tripTree;
+        this.mainMenu = mainMenu;
+    }
 
     public void displayMenu() {
+
+        Scanner scanner = new Scanner(System.in);
+
         while (true) {
-            clearScreen();
-            System.out.println("Trip Management");
-            System.out.println("1. Register Trip");
-            System.out.println("2. Search Trip");
-            System.out.println("3. Remove Trip");
-            System.out.println("4. Edit Trip");
-            System.out.println("5. Back to Main Menu");
-            System.out.print("Select an option: ");
+            ScreenTools.programTitle();
+            System.out.println("=================================");
+            System.out.println("         Gereciar Destinos");
+            System.out.println("=================================");
+            System.out.println("1. Cadastrar Destino");
+            System.out.println("2. Buscar Destino");
+            System.out.println("0. Voltar Menu Anterior");
+            System.out.println("=================================");
+            System.out.print("Selecione uma Opção: ");
 
             int choice = scanner.nextInt();
+
             switch (choice) {
                 case 1:
-                    registerTrip();
+                    newTrip();
                     break;
                 case 2:
-                    searchTrip();
+                    searchTripMenu();
                     break;
-                case 3:
-                    removeTrip();
+                case 0:
+                    mainMenu.mainMenu();
                     break;
-                case 4:
-                    editTrip();
-                    break;
-                case 5:
-                    return;
                 default:
                     System.out.println("Invalid option. Please try again.");
-                    pause();
+
             }
         }
     }
 
-    public void listTrips() {
-        clearScreen();
-        System.out.println("List of Trips:");
+    public void newTrip() {
+        ScreenTools.programTitle();
+        System.out.println("=================================");
+        System.out.println("     Cadastrar Novo Destino");
+        System.out.println("=================================");
+        System.out.println();
+        System.out.println("Informe o nome do Destino:");
+        System.out.print(">> ");
+        String destination = this.scanner.next();
+        System.out.println("Informe a Data da Viagem:");
+        System.out.print(">> ");
+        String date = this.scanner.next();
+
+        ItemTrip trip = new ItemTrip(IDGenerator.generateTripID(this.tripTree), date, destination);
+        if (this.tripTree.insert(trip)) {
+            System.out.println();
+            System.out.println("CADASTRADO COM SUCESSO!");
+            System.out.println();
+            pause();
+            displayMenu();
+
+        } else {
+            System.out.println();
+            System.out.println("OOPS! Ocorreu algum erro ao cadastrar o destino");
+            System.out.println();
+            pause();
+            displayMenu();
+        }
+
+    }
+
+    private void searchTripMenu() {
+        while (true) {
+            ScreenTools.programTitle();
+            System.out.println("=================================");
+            System.out.println("        Buscar Destinos");
+            System.out.println("=================================");
+            System.out.println("1. Listar Todos os Destinos");
+            System.out.println("2. Selecionar Destino");
+            System.out.println("0. Voltar Menu Anterior");
+            System.out.println("=================================");
+            System.out.print("Selecione uma Opção: ");
+
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    listAllTrips();
+                    break;
+                case 2:
+                    selectTrip();
+                    break;
+                case 0:
+                    return; // Voltar ao menu anterior
+                default:
+                    System.out.println("Opção inválida. Por favor, tente novamente.");
+            }
+        }
+    }
+
+    private void listAllTrips() {
+        ScreenTools.programTitle();
+        System.out.println("=================================");
+        System.out.println("         Lista de Destinos");
+        System.out.println("=================================");
+
         ItemTrip[] trips = tripTree.inOrder();
         for (ItemTrip trip : trips) {
-            System.out.println(
-                    "ID: " + trip.getId() + ", Destination: " + trip.getDestination() + ", Date: " + trip.getDate());
+            System.out.println("ID: " + trip.getTripID() + " - Destino: " + trip.getDestination());
         }
+
+        System.out.println("=================================");
         pause();
     }
 
-    private void registerTrip() {
-        clearScreen();
-        System.out.println("Register a New Trip");
+    private void selectTrip() {
+        System.out.print("Informe o ID do Destino: ");
+        int tripId = scanner.nextInt();
+        TripNode tripNode = tripTree.searchNode(tripId);
 
-        ItemTrip trip = new ItemTrip();
-        trip.setId(IDGenerator.generateTripID(tripTree));
-        System.out.print("Enter Traveler ID: ");
-        trip.setTravelerId(scanner.nextInt());
-        System.out.print("Enter Destination: ");
-        trip.setDestination(scanner.next());
-        System.out.print("Enter Date (YYYY-MM-DD): ");
-        trip.setDate(scanner.next());
-
-        tripTree.insert(trip);
-        System.out.println("Trip Registered Successfully!");
-        pause();
-    }
-
-    private void searchTrip() {
-        clearScreen();
-        System.out.println("Search Trip");
-        System.out.print("Enter Trip ID: ");
-        int id = scanner.nextInt();
-
-        if (tripTree.searchNode(id) != null) {
-            ItemTrip trip = tripTree.searchNode(id).getInfo();
-            System.out.println("Trip Found: ID: " + trip.getId() + ", Destination: " + trip.getDestination()
-                    + ", Date: " + trip.getDate());
+        if (tripNode == null) {
+            System.out.println("Destino não encontrado.");
+            pause();
         } else {
-            System.out.println("Trip not found.");
+            editOrRemoveTripMenu(tripNode.getInfo());
         }
+    }
+
+    private void editOrRemoveTripMenu(ItemTrip trip) {
+        while (true) {
+            ScreenTools.programTitle();
+            System.out.println("=================================");
+            System.out.println("      Gerenciar Destino");
+            System.out.println("=================================");
+            System.out.println();
+            System.out.println("ID: " + trip.getTripID());
+            System.out.println("Destino: " + trip.getDestination());
+            System.out.println("Data: " + trip.getDate());
+            System.out.println();
+            System.out.println("=================================");
+            System.out.println("1. Editar Destino");
+            System.out.println("2. Remover Destino");
+            System.out.println("0. Voltar Menu Anterior");
+            System.out.println("=================================");
+            System.out.print("Selecione uma Opção: ");
+
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    editTrip(trip);
+                    return;
+                case 2:
+                    removeTrip(trip);
+                    return;
+                case 0:
+                    return;
+                default:
+                    System.out.println("Opção inválida. Por favor, tente novamente.");
+            }
+        }
+    }
+
+    private void editTrip(ItemTrip trip) {
+        System.out.println("Informe o novo nome do Destino: ");
+        System.out.print(">> ");
+        String newDestination = scanner.next();
+        System.out.println("Informe a nova Data da Viagem: ");
+        System.out.print(">> ");
+        String newDate = scanner.next();
+
+        if (newDestination.length() > 0) {
+            trip.setDestination(newDestination);
+        }
+
+        if (newDate.length() > 0) {
+            trip.setDate(newDate);
+        }
+
+        System.out.println("Destino atualizado com sucesso!");
         pause();
     }
 
-    private void removeTrip() {
-        clearScreen();
-        System.out.println("Remove Trip");
-        System.out.print("Enter Trip ID: ");
-        int id = scanner.nextInt();
-
-        if (tripTree.remove(id)) {
-            System.out.println("Trip Removed Successfully!");
+    private void removeTrip(ItemTrip trip) {
+        if (tripTree.remove(trip.getTripID())) {
+            System.out.println("Destino removido com sucesso!");
         } else {
-            System.out.println("Trip not found.");
+            System.out.println("Falha ao remover o destino.");
         }
         pause();
-    }
-
-    private void editTrip() {
-        clearScreen();
-        System.out.println("Edit Trip");
-        System.out.print("Enter Trip ID: ");
-        int id = scanner.nextInt();
-
-        if (tripTree.searchNode(id) != null) {
-            ItemTrip trip = tripTree.searchNode(id).getInfo();
-            System.out.println("Editing Trip: ID: " + trip.getId() + ", Destination: " + trip.getDestination()
-                    + ", Date: " + trip.getDate());
-            System.out.print("Enter New Traveler ID (Leave blank to keep current): ");
-            String travelerId = scanner.next();
-            if (!travelerId.isEmpty()) {
-                trip.setTravelerId(Integer.parseInt(travelerId));
-            }
-            System.out.print("Enter New Destination (Leave blank to keep current): ");
-            String destination = scanner.next();
-            if (!destination.isEmpty()) {
-                trip.setDestination(destination);
-            }
-            System.out.print("Enter New Date (YYYY-MM-DD) (Leave blank to keep current): ");
-            String date = scanner.next();
-            if (!date.isEmpty()) {
-                trip.setDate(date);
-            }
-            tripTree.insert(trip);
-            System.out.println("Trip Edited Successfully!");
-        } else {
-            System.out.println("Trip not found.");
-        }
-        pause();
-    }
-
-    private void clearScreen() {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
     }
 
     private void pause() {
-        System.out.println("Press Enter to continue...");
+        System.out.println("Pressione qualquer tecla para continuar...");
         scanner.nextLine();
         scanner.nextLine();
     }
+
 }

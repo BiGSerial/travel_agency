@@ -25,7 +25,7 @@ public class TripTree {
     }
 
     public boolean insert(ItemTrip trip) {
-        if (searchNode(trip.getId()) != null) {
+        if (searchNode(trip.getTripID()) != null) {
             return false;
         } else {
             this.root = insert(trip, this.root);
@@ -39,7 +39,7 @@ public class TripTree {
             TripNode newNode = new TripNode(trip);
             return newNode;
         } else {
-            if (trip.getId() < node.getInfo().getId()) {
+            if (trip.getTripID() < node.getInfo().getTripID()) {
                 node.setLeft(insert(trip, node.getLeft()));
                 return node;
             } else {
@@ -49,26 +49,26 @@ public class TripTree {
         }
     }
 
-    public TripNode searchNode(int id) {
-        return searchNode(id, this.root);
+    public TripNode searchNode(int idTrip) {
+        return searchNode(idTrip, this.root);
     }
 
-    private TripNode searchNode(int id, TripNode node) {
+    private TripNode searchNode(int idTrip, TripNode node) {
         if (node == null) {
             return null;
         }
-        if (id < node.getInfo().getId()) {
-            return searchNode(id, node.getLeft());
-        } else if (id > node.getInfo().getId()) {
-            return searchNode(id, node.getRight());
+        if (idTrip < node.getInfo().getTripID()) {
+            return searchNode(idTrip, node.getLeft());
+        } else if (idTrip > node.getInfo().getTripID()) {
+            return searchNode(idTrip, node.getRight());
         } else {
             return node;
         }
     }
 
-    public boolean remove(int id) {
-        if (searchNode(id) != null) {
-            this.root = remove(id, this.root);
+    public boolean remove(int tripId) {
+        if (searchNode(tripId) != null) {
+            this.root = remove(tripId, this.root);
             this.countNode--;
             return true;
         } else {
@@ -76,11 +76,11 @@ public class TripTree {
         }
     }
 
-    private TripNode remove(int id, TripNode node) {
-        if (id < node.getInfo().getId()) {
-            node.setLeft(remove(id, node.getLeft()));
-        } else if (id > node.getInfo().getId()) {
-            node.setRight(remove(id, node.getRight()));
+    private TripNode remove(int tripId, TripNode node) {
+        if (tripId < node.getInfo().getTripID()) {
+            node.setLeft(remove(tripId, node.getLeft()));
+        } else if (tripId > node.getInfo().getTripID()) {
+            node.setRight(remove(tripId, node.getRight()));
         } else {
             if (node.getRight() == null) {
                 return node.getLeft();
@@ -104,17 +104,53 @@ public class TripTree {
     }
 
     public ItemTrip[] inOrder() {
-        ItemTrip[] items = new ItemTrip[this.countNode];
-        int[] index = new int[1];
-        inOrder(this.root, items, index);
-        return items;
+        int[] n = new int[1];
+        n[0] = 0;
+        ItemTrip[] vet = new ItemTrip[this.countNode];
+        return (doInOrder(this.root, vet, n));
     }
 
-    private void inOrder(TripNode node, ItemTrip[] items, int[] index) {
+    private ItemTrip[] doInOrder(TripNode node, ItemTrip[] vet, int[] n) {
         if (node != null) {
-            inOrder(node.getLeft(), items, index);
-            items[index[0]++] = node.getInfo();
-            inOrder(node.getRight(), items, index);
+            vet = doInOrder(node.getLeft(), vet, n);
+            vet[n[0]] = node.getInfo();
+            n[0]++;
+            vet = doInOrder(node.getRight(), vet, n);
         }
+        return vet;
+    }
+
+    public ItemTrip[] preOrder() {
+        int[] n = new int[1];
+        n[0] = 0;
+        ItemTrip[] vet = new ItemTrip[this.countNode];
+        return (doPreOrder(this.root, vet, n));
+    }
+
+    private ItemTrip[] doPreOrder(TripNode node, ItemTrip[] vet, int[] n) {
+        if (node != null) {
+            vet[n[0]] = node.getInfo();
+            n[0]++;
+            vet = doPreOrder(node.getLeft(), vet, n);
+            vet = doPreOrder(node.getRight(), vet, n);
+        }
+        return vet;
+    }
+
+    public ItemTrip[] postOrder() {
+        int[] n = new int[1];
+        n[0] = 0;
+        ItemTrip[] vet = new ItemTrip[this.countNode];
+        return (doPostOrder(this.root, vet, n));
+    }
+
+    private ItemTrip[] doPostOrder(TripNode node, ItemTrip[] vet, int[] n) {
+        if (node != null) {
+            vet = doPostOrder(node.getLeft(), vet, n);
+            vet = doPostOrder(node.getRight(), vet, n);
+            vet[n[0]] = node.getInfo();
+            n[0]++;
+        }
+        return vet;
     }
 }

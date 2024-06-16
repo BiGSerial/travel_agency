@@ -1,10 +1,9 @@
 package main.java.models;
 
 import main.java.data.ItemTrip;
-import main.java.trees.TravelerTree;
 
 public class TripNode {
-    
+
     private ItemTrip info;
     private TripNode left;
     private TripNode right;
@@ -12,7 +11,7 @@ public class TripNode {
     public TripNode(ItemTrip trip) {
         this.info = trip;
         this.left = null;
-        this.right = null;       
+        this.right = null;
     }
 
     public ItemTrip getInfo() {
@@ -38,8 +37,5 @@ public class TripNode {
     public void setRight(TripNode right) {
         this.right = right;
     }
-  
-
-    
 
 }

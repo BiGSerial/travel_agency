@@ -103,18 +103,59 @@ public class TravelerTree {
         return nodeHigh;
     }
 
+    //Centralizado
     public ItemTraveler[] inOrder() {
-        ItemTraveler[] items = new ItemTraveler[this.countNode];
-        int[] index = new int[1];
-        inOrder(this.root, items, index);
-        return items;
+        int[] n = new int[1];
+        n[0] = 0;
+        ItemTraveler[] vet = new ItemTraveler[this.countNode];
+        return (doInOrder(this.root, vet, n));
     }
 
-    private void inOrder(TravelerNode node, ItemTraveler[] items, int[] index) {
+
+    private ItemTraveler[] doInOrder(TravelerNode node, ItemTraveler[] vet, int[] n) {
         if (node != null) {
-            inOrder(node.getLeft(), items, index);
-            items[index[0]++] = node.getInfo();
-            inOrder(node.getRight(), items, index);
+            vet = doInOrder(node.getLeft(), vet, n);
+            vet[n[0]] = node.getInfo();
+            n[0]++;
+            vet = doInOrder(node.getRight(), vet, n);
         }
+        return vet;
     }
+
+    //Pré-Fixado
+    public ItemTraveler[] preOrder() {
+        int[] n = new int[1];
+        n[0] = 0;
+        ItemTraveler[] vet = new ItemTraveler[this.countNode];
+        return (doPreOrder(this.root, vet, n));
+    }
+
+    private ItemTraveler[] doPreOrder(TravelerNode node, ItemTraveler[] vet, int[] n) {
+        if (node != null) {
+            vet[n[0]] = node.getInfo();
+            n[0]++;
+            vet = doPreOrder(node.getLeft(), vet, n);
+            vet = doPreOrder(node.getRight(), vet, n);
+        }
+        return vet;
+    }
+
+    //Pós-Fixado
+    public ItemTraveler[] postOrder() {
+        int[] n = new int[1];
+        n[0] = 0;
+        ItemTraveler[] vet = new ItemTraveler[this.countNode];
+        return (doPostOrder(this.root, vet, n));
+    }
+
+    private ItemTraveler[] doPostOrder(TravelerNode node, ItemTraveler[] vet, int[] n) {
+        if (node != null) {
+            vet = doPostOrder(node.getLeft(), vet, n);
+            vet = doPostOrder(node.getRight(), vet, n);
+            vet[n[0]] = node.getInfo();
+            n[0]++;
+        }
+        return vet;
+    }
+
 }

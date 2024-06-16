@@ -1,150 +1,262 @@
 package main.java.view;
 
-import java.util.Scanner;
 import main.java.data.ItemTraveler;
-import main.java.trees.TravelerTree;
-import main.java.tools.IDGenerator;
 import main.java.models.TravelerNode;
+import main.java.tools.IDGenerator;
+import main.java.tools.ScreenTools;
+import main.java.trees.TravelerTree;
+
+import java.util.Scanner;
 
 public class TravelerMenu {
     private Scanner scanner = new Scanner(System.in);
-    private TravelerTree travelerTree = new TravelerTree();
+    private TravelerTree travelerTree;
+    private MainMenu mainMenu;
+
+    public TravelerMenu(TravelerTree travelerTree, MainMenu mainMenu) {
+        this.travelerTree = travelerTree;
+        this.mainMenu = mainMenu;
+    }
 
     public void displayMenu() {
         while (true) {
-            clearScreen();
-            System.out.println("Traveler Management");
-            System.out.println("1. Register Traveler");
-            System.out.println("2. Search Traveler");
-            System.out.println("3. Remove Traveler");
-            System.out.println("4. Edit Traveler");
-            System.out.println("5. Back to Main Menu");
-            System.out.print("Select an option: ");
+            ScreenTools.programTitle();
+            System.out.println("=================================");
+            System.out.println("        Gerenciar Viajantes");
+            System.out.println("=================================");
+            System.out.println("1. Cadastrar Viajante");
+            System.out.println("2. Buscar Viajante");
+            System.out.println("3. Listar Todos os Viajantes (Pré-Ordem)");
+            System.out.println("4. Listar Todos os Viajantes (Pós-Ordem)");
+            System.out.println("0. Voltar Menu Anterior");
+            System.out.println("=================================");
+            System.out.print("Selecione uma Opção: ");
 
             int choice = scanner.nextInt();
+
             switch (choice) {
                 case 1:
-                    registerTraveler();
+                    newTraveler();
                     break;
                 case 2:
-                    searchTraveler();
+                    searchTravelerMenu();
                     break;
                 case 3:
-                    removeTraveler();
+                    listPreOrder();
                     break;
                 case 4:
-                    editTraveler();
+                    listPostOrder();
                     break;
-                case 5:
-                    return;
+                case 0:
+                    mainMenu.mainMenu();
+                    break;
                 default:
-                    System.out.println("Invalid option. Please try again.");
-                    pause();
+                    System.out.println("Opção inválida. Por favor, tente novamente.");
             }
         }
     }
 
-    public void listTravelers() {
-        clearScreen();
-        System.out.println("List of Travelers:");
-        ItemTraveler[] travelers = travelerTree.inOrder();
-        for (ItemTraveler traveler : travelers) {
-            System.out.println(
-                    "ID: " + traveler.getTravelerId() + ", Name: " + traveler.getName() + " " + traveler.getLastname());
-        }
-        pause();
-    }
-
-    private void registerTraveler() {
-        clearScreen();
-        System.out.println("Register a New Traveler");
+    private void newTraveler() {
+        ScreenTools.programTitle();
+        System.out.println("=================================");
+        System.out.println("      Cadastrar Novo Viajante");
+        System.out.println("=================================");
+        System.out.println();
+        System.out.println("Informe o nome do Viajante:");
+        System.out.print(">> ");
+        String name = scanner.next();
+        System.out.println("Informe o sobrenome do Viajante:");
+        System.out.print(">> ");
+        String lastname = scanner.next();
+        System.out.println("Informe a idade do Viajante:");
+        System.out.print(">> ");
+        int age = scanner.nextInt();
 
         ItemTraveler traveler = new ItemTraveler();
         traveler.setTravelerId(IDGenerator.generateTravelID(travelerTree));
-        System.out.print("Enter First Name: ");
-        traveler.setName(scanner.next());
-        System.out.print("Enter Last Name: ");
-        traveler.setLastname(scanner.next());
-        System.out.print("Enter Age: ");
-        traveler.setAge(scanner.nextInt());
+        traveler.setName(name);
+        traveler.setLastname(lastname);
+        traveler.setAge(age);
 
-        travelerTree.insert(traveler);
-        System.out.println("Traveler Registered Successfully!");
+        if (travelerTree.insert(traveler)) {
+            System.out.println();
+            System.out.println("CADASTRADO COM SUCESSO!");
+            System.out.println();
+            pause();
+            displayMenu();
+        } else {
+            System.out.println();
+            System.out.println("OOPS! Ocorreu algum erro ao cadastrar o viajante");
+            System.out.println();
+            pause();
+            displayMenu();
+        }
+    }
+
+    private void searchTravelerMenu() {
+        while (true) {
+            ScreenTools.programTitle();
+            System.out.println("=================================");
+            System.out.println("        Buscar Viajantes");
+            System.out.println("=================================");
+            System.out.println("1. Listar Todos os Viajantes");
+            System.out.println("2. Selecionar Viajante");
+            System.out.println("0. Voltar Menu Anterior");
+            System.out.println("=================================");
+            System.out.print("Selecione uma Opção: ");
+
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    listAllTravelers();
+                    break;
+                case 2:
+                    selectTraveler();
+                    break;
+                case 0:
+                    return;
+                default:
+                    System.out.println("Opção inválida. Por favor, tente novamente.");
+            }
+        }
+    }
+
+    private void listAllTravelers() {
+        ScreenTools.programTitle();
+        System.out.println("=================================");
+        System.out.println("        Lista de Viajantes");
+        System.out.println("=================================");
+
+        ItemTraveler[] travelers = travelerTree.inOrder();
+        for (ItemTraveler traveler : travelers) {
+            System.out.println("ID: " + traveler.getTravelerId() + " - Nome: " + traveler.getName() + " "
+                    + traveler.getLastname());
+        }
+
+        System.out.println("=================================");
         pause();
     }
 
-    private void searchTraveler() {
-        clearScreen();
-        System.out.println("Search Traveler");
-        System.out.print("Enter Traveler ID: ");
-        int id = scanner.nextInt();
+    private void listPreOrder() {
+        ScreenTools.programTitle();
+        System.out.println("=================================");
+        System.out.println("    Lista de Viajantes (Pré-Ordem)");
+        System.out.println("=================================");
 
-        TravelerNode node = travelerTree.searchNode(id);
-        if (node != null) {
-            ItemTraveler traveler = node.getInfo();
-            System.out.println("Traveler Found: " + traveler.getName() + " " + traveler.getLastname() + ", Age: "
-                    + traveler.getAge());
+        ItemTraveler[] travelers = travelerTree.preOrder();
+        for (ItemTraveler traveler : travelers) {
+            System.out.println("ID: " + traveler.getTravelerId() + " - Nome: " + traveler.getName() + " "
+                    + traveler.getLastname());
+        }
+
+        System.out.println("=================================");
+        pause();
+    }
+
+    private void listPostOrder() {
+        ScreenTools.programTitle();
+        System.out.println("=================================");
+        System.out.println("    Lista de Viajantes (Pós-Ordem)");
+        System.out.println("=================================");
+
+        ItemTraveler[] travelers = travelerTree.postOrder();
+        for (ItemTraveler traveler : travelers) {
+            System.out.println("ID: " + traveler.getTravelerId() + " - Nome: " + traveler.getName() + " "
+                    + traveler.getLastname());
+        }
+
+        System.out.println("=================================");
+        pause();
+    }
+
+    private void selectTraveler() {
+        System.out.print("Informe o ID do Viajante: ");
+        int travelerId = scanner.nextInt();
+        TravelerNode travelerNode = travelerTree.searchNode(travelerId);
+
+        if (travelerNode == null) {
+            System.out.println("Viajante não encontrado.");
+            pause();
         } else {
-            System.out.println("Traveler not found.");
+            editOrRemoveTravelerMenu(travelerNode.getInfo());
+        }
+    }
+
+    private void editOrRemoveTravelerMenu(ItemTraveler traveler) {
+        while (true) {
+            ScreenTools.programTitle();
+            System.out.println("=================================");
+            System.out.println("      Gerenciar Viajante");
+            System.out.println("=================================");
+            System.out.println();
+            System.out.println("ID: " + traveler.getTravelerId());
+            System.out.println("Nome: " + traveler.getName());
+            System.out.println("Sobrenome: " + traveler.getLastname());
+            System.out.println("Idade: " + traveler.getAge());
+            System.out.println();
+            System.out.println("=================================");
+            System.out.println("1. Editar Viajante");
+            System.out.println("2. Remover Viajante");
+            System.out.println("0. Voltar Menu Anterior");
+            System.out.println("=================================");
+            System.out.print("Selecione uma Opção: ");
+
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    editTraveler(traveler);
+                    return;
+                case 2:
+                    removeTraveler(traveler);
+                    return;
+                case 0:
+                    return;
+                default:
+                    System.out.println("Opção inválida. Por favor, tente novamente.");
+            }
+        }
+    }
+
+    private void editTraveler(ItemTraveler traveler) {
+        System.out.println("Informe o novo nome do Viajante: ");
+        System.out.print(">> ");
+        String newName = scanner.next();
+        System.out.println("Informe o novo sobrenome do Viajante: ");
+        System.out.print(">> ");
+        String newLastname = scanner.next();
+        System.out.println("Informe a nova idade do Viajante: ");
+        System.out.print(">> ");
+        int newAge = scanner.nextInt();
+
+        if (!newName.isEmpty()) {
+            traveler.setName(newName);
+        }
+
+        if (!newLastname.isEmpty()) {
+            traveler.setLastname(newLastname);
+        }
+
+        if (newAge > 0) {
+            traveler.setAge(newAge);
+        }
+
+        System.out.println("Viajante atualizado com sucesso!");
+        pause();
+    }
+
+    private void removeTraveler(ItemTraveler traveler) {
+        if (travelerTree.remove(traveler.getTravelerId())) {
+            System.out.println("Viajante removido com sucesso!");
+        } else {
+            System.out.println("Falha ao remover o viajante.");
         }
         pause();
-    }
-
-    private void removeTraveler() {
-        clearScreen();
-        System.out.println("Remove Traveler");
-        System.out.print("Enter Traveler ID: ");
-        int id = scanner.nextInt();
-
-        if (travelerTree.remove(id)) {
-            System.out.println("Traveler Removed Successfully!");
-        } else {
-            System.out.println("Traveler not found.");
-        }
-        pause();
-    }
-
-    private void editTraveler() {
-        clearScreen();
-        System.out.println("Edit Traveler");
-        System.out.print("Enter Traveler ID: ");
-        int id = scanner.nextInt();
-
-        TravelerNode node = travelerTree.searchNode(id);
-        if (node != null) {
-            ItemTraveler traveler = node.getInfo();
-            System.out.println("Editing Traveler: " + traveler.getName() + " " + traveler.getLastname() + ", Age: "
-                    + traveler.getAge());
-            System.out.print("Enter New First Name (Leave blank to keep current): ");
-            String name = scanner.next();
-            if (!name.isEmpty()) {
-                traveler.setName(name);
-            }
-            System.out.print("Enter New Last Name (Leave blank to keep current): ");
-            String lastname = scanner.next();
-            if (!lastname.isEmpty()) {
-                traveler.setLastname(lastname);
-            }
-            System.out.print("Enter New Age (Enter 0 to keep current): ");
-            int age = scanner.nextInt();
-            if (age > 0) {
-                traveler.setAge(age);
-            }
-            travelerTree.insert(traveler);
-            System.out.println("Traveler Edited Successfully!");
-        } else {
-            System.out.println("Traveler not found.");
-        }
-        pause();
-    }
-
-    private void clearScreen() {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
     }
 
     private void pause() {
-        System.out.println("Press Enter to continue...");
+        System.out.println("Pressione qualquer tecla para continuar...");
         scanner.nextLine();
         scanner.nextLine();
     }

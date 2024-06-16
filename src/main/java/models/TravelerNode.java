@@ -1,18 +1,15 @@
 package main.java.models;
 
 import main.java.data.ItemTraveler;
-import main.java.trees.TravelerTree;
 
 public class TravelerNode {
-    
+
     private ItemTraveler info;
     private TravelerNode left;
     private TravelerNode right;
-    
-   
 
     public TravelerNode(ItemTraveler traveler) {
-        this.info = traveler;       
+        this.info = traveler;
         this.left = null;
         this.right = null;
         // this.dependents = new TravelerTree();
@@ -42,6 +39,4 @@ public class TravelerNode {
         this.right = right;
     }
 
-
-    
 }

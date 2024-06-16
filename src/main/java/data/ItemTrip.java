@@ -1,25 +1,27 @@
 package main.java.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ItemTrip {
-    private int id;
-    private int travelerId;
+    private int tripId;
     private String date;
     private String destination;
+    private List<ItemTraveler> travelers;
 
-    public int getId() {
-        return this.id;
+    public ItemTrip(int tripId, String date, String destination) {
+        travelers = new ArrayList<>();
+        this.tripId = tripId;
+        this.date = date;
+        this.destination = destination;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public int getTripID() {
+        return this.tripId;
     }
 
-    public int getTravelerId() {
-        return this.travelerId;
-    }
-
-    public void setTravelerId(int travelerId) {
-        this.travelerId = travelerId;
+    public void setTripID(int id) {
+        this.tripId = id;
     }
 
     public String getDate() {
@@ -38,6 +40,19 @@ public class ItemTrip {
         this.destination = destination;
     }
 
-   
-  
+    public List<ItemTraveler> getTravelers() {
+        return travelers;
+    }
+
+    public void addTraveler(ItemTraveler traveler) {
+        travelers.add(traveler);
+    }
+
+    public void removeTraveler(ItemTraveler traveler) {
+        travelers.remove(traveler);
+    }
+
+    public void removeTravelerById(int travelerId) {
+        travelers.removeIf(traveler -> traveler.getTravelerId() == travelerId);
+    }
 }
