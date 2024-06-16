@@ -20,8 +20,6 @@ public class TripMenu {
 
     public void displayMenu() {
 
-        Scanner scanner = new Scanner(System.in);
-
         while (true) {
             ScreenTools.programTitle();
             System.out.println("=================================");

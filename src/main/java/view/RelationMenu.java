@@ -4,7 +4,6 @@ import main.java.data.ItemTraveler;
 import main.java.data.ItemTrip;
 import main.java.models.TravelerNode;
 import main.java.models.TripNode;
-import main.java.tools.IDGenerator;
 import main.java.tools.ScreenTools;
 import main.java.trees.TravelerTree;
 import main.java.trees.TripTree;
