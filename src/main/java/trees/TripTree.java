@@ -1,6 +1,11 @@
 package main.java.trees;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import main.java.data.ItemTraveler;
 import main.java.data.ItemTrip;
+import main.java.models.TravelerNode;
 import main.java.models.TripNode;
 
 public class TripTree {
@@ -152,5 +157,38 @@ public class TripTree {
             n[0]++;
         }
         return vet;
+    }
+
+    public List<ItemTraveler> getTravelersInfoByTripId(int tripId, TravelerTree travelerTree) {
+        TripNode tripNode = searchNode(tripId);
+        if (tripNode == null) {
+            return new ArrayList<>();
+        }
+        ItemTrip trip = tripNode.getInfo();
+        List<ItemTraveler> travelers = new ArrayList<>();
+        for (Integer travelerId : trip.getTravelerIds()) {
+            TravelerNode travelerNode = travelerTree.searchNode(travelerId);
+            if (travelerNode != null) {
+                travelers.add(travelerNode.getInfo());
+            }
+        }
+        return travelers;
+    }
+
+    public List<ItemTrip> searchTripsByDestination(String pattern) {
+        List<ItemTrip> trips = new ArrayList<>();
+        searchTripsByDestination(this.root, pattern.toLowerCase(), trips);
+        return trips;
+    }
+
+    private void searchTripsByDestination(TripNode node, String pattern, List<ItemTrip> trips) {
+        if (node != null) {
+            String destination = node.getInfo().getDestination().toLowerCase();
+            if (destination.matches(pattern.replace("%", ".*"))) {
+                trips.add(node.getInfo());
+            }
+            searchTripsByDestination(node.getLeft(), pattern, trips);
+            searchTripsByDestination(node.getRight(), pattern, trips);
+        }
     }
 }

@@ -1,7 +1,12 @@
 package main.java.trees;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import main.java.data.ItemTraveler;
+import main.java.data.ItemTrip;
 import main.java.models.TravelerNode;
+import main.java.models.TripNode;
 
 public class TravelerTree {
     private TravelerNode root;
@@ -156,6 +161,39 @@ public class TravelerTree {
             n[0]++;
         }
         return vet;
+    }
+
+    public List<ItemTrip> getTripsForTraveler(int travelerId, TripTree tripTree) {
+        List<ItemTrip> trips = new ArrayList<>();
+        collectTripsPreOrder(travelerId, tripTree.getRoot(), trips);
+        return trips;
+    }
+
+    private void collectTripsPreOrder(int travelerId, TripNode node, List<ItemTrip> trips) {
+        if (node != null) {
+            if (node.getInfo().getTravelerIds().contains(travelerId)) {
+                trips.add(node.getInfo());
+            }
+            collectTripsPreOrder(travelerId, node.getLeft(), trips);
+            collectTripsPreOrder(travelerId, node.getRight(), trips);
+        }
+    }
+
+    public List<ItemTraveler> searchTravelersByName(String pattern) {
+        List<ItemTraveler> travelers = new ArrayList<>();
+        searchTravelersByName(this.root, pattern.toLowerCase(), travelers);
+        return travelers;
+    }
+
+    private void searchTravelersByName(TravelerNode node, String pattern, List<ItemTraveler> travelers) {
+        if (node != null) {
+            String fullName = (node.getInfo().getName() + " " + node.getInfo().getLastname()).toLowerCase();
+            if (fullName.matches(pattern.replace("%", ".*"))) {
+                travelers.add(node.getInfo());
+            }
+            searchTravelersByName(node.getLeft(), pattern, travelers);
+            searchTravelersByName(node.getRight(), pattern, travelers);
+        }
     }
 
 }

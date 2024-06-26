@@ -12,7 +12,7 @@ public class IDGenerator {
         int id;
 
         if (tree.isEmpty()) {
-            return 100;
+            return 250;
         }
 
         do {
@@ -26,7 +26,7 @@ public class IDGenerator {
         int id;
 
         if (tree.isEmpty()) {
-            return 100;
+            return 250;
         }
 
         do {

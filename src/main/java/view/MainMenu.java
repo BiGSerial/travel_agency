@@ -8,6 +8,8 @@ import main.java.data.ItemTrip;
 import main.java.tools.IDGenerator;
 
 import java.util.Scanner;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Random;
 
 public class MainMenu {
@@ -38,8 +40,7 @@ public class MainMenu {
             System.out.println("=================================");
             System.out.println("1. Gerenciar Viajantes");
             System.out.println("2. Gerenciar Destinos");
-            System.out.println("3. Gerenciar Viagens");
-            System.out.println("4. Carregar Dados Modelos");
+            System.out.println("9. Carregar Dados Modelos");
             System.out.println("0. Sair");
             System.out.println("=================================");
             System.out.print("Selecione uma Opção: ");
@@ -48,18 +49,12 @@ public class MainMenu {
 
             switch (choice) {
                 case 1:
-                    TravelerMenu travelerMenu = new TravelerMenu(travelerTree, this);
-                    travelerMenu.displayMenu();
+                    new TravelerMenu(travelerTree, tripTree, this).displayMenu();
                     break;
                 case 2:
-                    TripMenu tripMenu = new TripMenu(tripTree, this);
-                    tripMenu.displayMenu();
+                    new TripMenu(tripTree, travelerTree, this).displayMenu();
                     break;
-                case 3:
-                    RelationMenu relationMenu = new RelationMenu(travelerTree, tripTree, this);
-                    relationMenu.displayMenu();
-                    break;
-                case 4:
+                case 9:
                     loadSampleData();
                     break;
                 case 0:
@@ -73,10 +68,18 @@ public class MainMenu {
 
     private void loadSampleData() {
         Random random = new Random();
+        Set<String> usedDestinations = new HashSet<>();
+        Set<String> usedNames = new HashSet<>();
 
         // Generate 15 sample trips
         for (int i = 0; i < 15; i++) {
-            String destination = DESTINATIONS[random.nextInt(DESTINATIONS.length)];
+            String destination;
+            do {
+                destination = DESTINATIONS[random.nextInt(DESTINATIONS.length)];
+            } while (usedDestinations.contains(destination));
+
+            usedDestinations.add(destination);
+
             String date = generateRandomDate();
             ItemTrip trip = new ItemTrip(IDGenerator.generateTripID(tripTree), date, destination);
             tripTree.insert(trip);
@@ -84,8 +87,18 @@ public class MainMenu {
 
         // Generate 30 sample travelers
         for (int i = 0; i < 30; i++) {
-            String name = NAMES[random.nextInt(NAMES.length)];
-            String lastname = LASTNAMES[random.nextInt(LASTNAMES.length)];
+            String name;
+            String lastname;
+            String fullName;
+
+            do {
+                name = NAMES[random.nextInt(NAMES.length)];
+                lastname = LASTNAMES[random.nextInt(LASTNAMES.length)];
+                fullName = name + " " + lastname;
+            } while (usedNames.contains(fullName));
+
+            usedNames.add(fullName);
+
             int age = 18 + random.nextInt(63); // Age between 18 and 80
             ItemTraveler traveler = new ItemTraveler();
             traveler.setTravelerId(IDGenerator.generateTravelID(travelerTree));
@@ -95,7 +108,7 @@ public class MainMenu {
             travelerTree.insert(traveler);
         }
 
-        System.out.println("Dados modelos carregados com sucesso!");
+        System.out.println("Sample data loaded successfully!");
         pause();
     }
 

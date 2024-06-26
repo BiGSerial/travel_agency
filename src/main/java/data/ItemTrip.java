@@ -1,16 +1,22 @@
 package main.java.data;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import main.java.models.TravelerNode;
+import main.java.models.TripNode;
+import main.java.trees.TravelerTree;
 
 public class ItemTrip {
     private int tripId;
     private String date;
     private String destination;
-    private List<ItemTraveler> travelers;
+    private List<Integer> travelerIds;
 
     public ItemTrip(int tripId, String date, String destination) {
-        travelers = new ArrayList<>();
+        travelerIds = new ArrayList<>();
         this.tripId = tripId;
         this.date = date;
         this.destination = destination;
@@ -40,19 +46,33 @@ public class ItemTrip {
         this.destination = destination;
     }
 
-    public List<ItemTraveler> getTravelers() {
-        return travelers;
+    public List<Integer> getTravelerIds() {
+        return travelerIds;
     }
 
-    public void addTraveler(ItemTraveler traveler) {
-        travelers.add(traveler);
+    public boolean addTravelerId(int travelerId) {
+        Set<Integer> uniqueIds = new HashSet<>(travelerIds);
+        if (uniqueIds.add(travelerId)) {
+            travelerIds.add(travelerId);
+            return true;
+        }
+        return false;
     }
 
-    public void removeTraveler(ItemTraveler traveler) {
-        travelers.remove(traveler);
+    public boolean removeTravelerId(int travelerId) {
+        return travelerIds.remove(Integer.valueOf(travelerId));
     }
 
     public void removeTravelerById(int travelerId) {
-        travelers.removeIf(traveler -> traveler.getTravelerId() == travelerId);
+        travelerIds.remove(Integer.valueOf(travelerId));
     }
+
+    public boolean existsTravelerId(int travelerId) {
+        return travelerIds.contains(travelerId);
+    }
+
+    public int getTotalTravelers() {
+        return travelerIds.size();
+    }
+
 }
