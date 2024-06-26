@@ -99,3 +99,115 @@ The project will be implemented using tree manipulation methods such as insertio
 3. Run the main file to start the program.
 
 
+# Travel Management System
+
+Este é um sistema de gerenciamento de viagens que permite gerenciar viajantes e viagens, incluindo a adição, remoção e busca de dados. A interface é baseada em menus de texto.
+
+## Estrutura de Diretórios
+
+src/
+│
+├── main/
+│ ├── java/
+│ │ ├── data/
+│ │ │ ├── ItemTraveler.java
+│ │ │ └── ItemTrip.java
+│ │ ├── models/
+│ │ │ ├── TravelerNode.java
+│ │ │ └── TripNode.java
+│ │ ├── tools/
+│ │ │ ├── AppConstants.java
+│ │ │ ├── IDGenerator.java
+│ │ │ ├── ScreenTools.java
+│ │ ├── trees/
+│ │ │ ├── TravelerTree.java
+│ │ │ └── TripTree.java
+│ │ ├── view/
+│ │ │ ├── MainMenu.java
+│ │ │ ├── TravelerMenu.java
+│ │ │ └── TripMenu.java
+│ │ └── Main.java
+│ └── resources/
+
+
+
+## Manual de Uso
+
+### Introdução
+
+Este projeto é um sistema de gerenciamento de viagens que permite gerenciar viajantes e viagens, incluindo a adição, remoção e busca de dados. A interface é baseada em menus de texto.
+
+### Estrutura do Projeto
+
+- **data**: Contém as classes de dados `ItemTraveler` e `ItemTrip`.
+- **models**: Contém as classes `TravelerNode` e `TripNode` que representam os nós das árvores de viajantes e viagens.
+- **tools**: Contém utilitários e constantes usadas no aplicativo.
+  - `AppConstants`: Contém constantes usadas em todo o aplicativo.
+  - `IDGenerator`: Gera IDs únicos para viajantes e viagens.
+  - `ScreenTools`: Utilitários para limpar a tela e exibir títulos.
+  - `SampleDataLoader`: Carrega dados de amostra para o aplicativo.
+- **trees**: Contém as classes `TravelerTree` e `TripTree` que implementam as árvores binárias de viajantes e viagens.
+- **view**: Contém os menus do aplicativo.
+  - `MainMenu`: Menu principal do aplicativo.
+  - `TravelerMenu`: Menu de gerenciamento de viajantes.
+  - `TripMenu`: Menu de gerenciamento de viagens.
+
+### Como Usar
+
+1. **Inicialização do Programa**
+
+   Para iniciar o programa, compile e execute a classe `Main` que abrirá o menu principal.
+
+   ```bash
+   `javac -d bin src/main/java/**/*.java`
+   `java -cp bin main.java.Main`
+
+Menu Principal
+
+1. Manage Travelers: Gerencia os viajantes.
+2. Manage Trips: Gerencia as viagens.
+3. Load Sample Data: Carrega dados de amostra.
+0. Exit: Sai do programa.
+Gerenciamento de Viajantes
+
+No menu TravelerMenu você pode:
+
+1. Register Traveler: Registrar um novo viajante.
+2. Search Traveler: Buscar viajantes.
+List All Travelers: Lista todos os viajantes.
+Search Traveler by Name: Busca viajantes por nome usando curingas (%).
+Select Traveler: Seleciona um viajante para gerenciar.
+3. List All Travelers (Pre-Order): Lista todos os viajantes em pré-ordem.
+4. List All Travelers (Post-Order): Lista todos os viajantes em pós-ordem.
+5. List Trips of a Traveler: Lista as viagens de um viajante.
+0. Back to Main Menu: Retorna ao menu principal.
+Gerenciamento de Viagens
+
+No menu TripMenu você pode:
+
+1. Register Trip: Registrar uma nova viagem.
+2. Search Trip: Buscar viagens.
+List All Trips: Lista todas as viagens.
+Select Trip: Seleciona uma viagem para gerenciar.
+0. Back to Main Menu: Retorna ao menu principal.
+Gerenciamento de Relações
+
+Ao selecionar um viajante ou uma viagem, você pode:
+
+Edit Traveler: Editar os dados do viajante.
+Remove Traveler: Remover o viajante.
+Add Trip to Traveler: Adicionar uma viagem ao viajante.
+Remove Trip from Traveler: Remover uma viagem do viajante.
+Edit Trip: Editar os dados da viagem.
+Remove Trip: Remover a viagem.
+Add Traveler to Trip: Adicionar um viajante à viagem.
+Remove Traveler from Trip: Remover um viajante da viagem.
+List Travelers of Trip: Listar os viajantes de uma viagem.
+Carregar Dados de Amostra
+
+Ao selecionar a opção "Load Sample Data" no menu principal, 15 viagens e 30 viajantes serão gerados aleatoriamente sem duplicatas.
+
+Dicas
+Use o wildcard % para buscar viajantes ou viagens que contenham parte do nome ou destino.
+Navegue pelos menus usando os números correspondentes às opções disponíveis.
+Com este manual, você deve estar apto a gerenciar viajantes e viagens usando este sistema.
